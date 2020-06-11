@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "SQLKK.h"
 //#include "admin.h"
 //#include "sqlpp11/sqlite3/sqlite3.h"
 //#include "sqlpp11/sqlpp11.h"
@@ -15,52 +16,70 @@
 const std::string getCurrentTime();
 
 int main() {
-  sqlite3 *sql = nullptr;
-  const char *path = "database.db";
-  int result = sqlite3_open_v2(
-      path, &sql, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE, nullptr);
+  
+  using namespace lookupman;
 
-  if (result != SQLITE_OK) {
-    std::clog << "打开数据库失败！";
+
+  SQLKK sqlEngine("database.db");
+  sqlEngine.InitEngine();
+
+  auto result = sqlEngine.Select("select * from admin");
+
+  
+
+  while (sqlite3_step(result.get()) == SQLITE_ROW)
+  {
+    int id = sqlite3_column_int(result.get(), 0);
+    const unsigned char *account_number = sqlite3_column_text(result.get(), 1);
+    printf("id: %d account_number: %s\n", id, account_number);
   }
 
-  const char *sqlSentence = "select * from admin";
-  sqlite3_stmt *stmt = nullptr;
+  //sqlite3 *sql = nullptr;
+  //const char *path = "database.db";
+  //int result = sqlite3_open_v2(
+  //    path, &sql, SQLITE_OPEN_READWRITE | SQLITE_OPEN_SHAREDCACHE, nullptr);
 
-  result = sqlite3_prepare_v2(sql, sqlSentence, -1, &stmt, nullptr);
+  //if (result != SQLITE_OK) {
+  //  std::clog << "打开数据库失败！";
+  //}
 
-  if (result != SQLITE_OK) {
-    std::clog << "查询语句执行失败";
-  }
+  //const char *sqlSentence = "select * from admin";
+  //sqlite3_stmt *stmt = nullptr;
 
-  while (sqlite3_step(stmt) == SQLITE_ROW) {
-    int id = sqlite3_column_int(stmt, 0);
-    const unsigned char *account_number = sqlite3_column_text(stmt, 1);
+  //result = sqlite3_prepare_v2(sql, sqlSentence, -1, &stmt, nullptr);
 
-    std::clog << "id: " << id << " account_number: " << account_number
-              << std::endl;
-  }
+  //if (result != SQLITE_OK) {
+  //  std::clog << "查询语句执行失败";
+  //}
 
-  sqlite3_reset(stmt);
+  //while (sqlite3_step(stmt) == SQLITE_ROW) {
+  //  int id = sqlite3_column_int(stmt, 0);
+  //  const unsigned char *account_number = sqlite3_column_text(stmt, 1);
 
-  std::string sqlS = "update admin set name = ? where id = ?";
-  result = sqlite3_prepare_v2(sql, sqlS.c_str(), -1, &stmt, nullptr);
+  //  std::clog << "id: " << id << " account_number: " << account_number
+  //            << std::endl;
+  //}
 
-  result = sqlite3_bind_text(stmt, 1, "ZZXZZZZ", -1, SQLITE_STATIC);
-  result = sqlite3_bind_int(stmt, 2, 1);
+  //sqlite3_reset(stmt);
 
-  if (result == SQLITE_OK && sqlite3_step(stmt) == SQLITE_DONE) {
-    std::cout << "更新语句成功" << std::endl;
-  } else {
-    std::cout << "更新语句失败" << std::endl;
-  }
+  //std::string sqlS = "update admin set name = ? where id = ?";
+  //result = sqlite3_prepare_v2(sql, sqlS.c_str(), -1, &stmt, nullptr);
 
-  sqlite3_finalize(stmt);
+  //result = sqlite3_bind_text(stmt, 1, "ZZXZZZZ", -1, SQLITE_STATIC);
+  //result = sqlite3_bind_int(stmt, 2, 1);
 
-  if (sql) {
-    sqlite3_close_v2(sql);
-    sql = nullptr;
-  }
+  //if (result == SQLITE_OK && sqlite3_step(stmt) == SQLITE_DONE) {
+  //  std::cout << "更新语句成功" << std::endl;
+  //} else {
+  //  std::cout << "更新语句失败" << std::endl;
+  //}
+
+  //sqlite3_finalize(stmt);
+
+  //if (sql) {
+  //  sqlite3_close_v2(sql);
+  //  sql = nullptr;
+  //}
 }
 
 // namespace sql = sqlpp::sqlite3;
