@@ -41,8 +41,6 @@ class KServer {
   httplib::Server server_;
   std::string address_;
   int port_;
-
-
 };
 }  // namespace lookupman
 

@@ -8,11 +8,11 @@
 #include <cstdlib>
 #include <iostream>
 
-
 #include "KServer.h"
 #include "SQLKK.h"
 #include "Controller.h"
-//#include "Config.h"
+#include "MyCrypto.h"
+
 
 extern lookupman::KServer k_server;
 extern void global_init();
@@ -21,13 +21,18 @@ int main() {
   using namespace lookupman;
   using namespace httplib;
 
+  //std::cout << MyCrypto::Hash("I'm kzx khhhhhh") << std::endl;
+
+
   global_init();
 
-  k_server.Get("/login", StaffLogin);
+  k_server.Post("/SignIn", StaffSignIn);
 
-  //k_server.Get("/", [](const Request& req, Response& res) {
-  //  res.set_content("Hello World!", "text/plain");
-  //});
+  k_server.Post("/login", StaffLogin);
+
+  k_server.Get("/", [](const Request& req, Response& res) {
+    res.set_content("Hello World!", "text/plain");
+  });
 
 
   k_server.Listen();

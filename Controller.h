@@ -7,6 +7,7 @@
 #include "sqlite3.h"
 
 extern lookupman::SQLKK sqlEngine;
+void StaffSignIn(const httplib::Request& request, httplib::Response& response);
 
 void StaffLogin(const httplib::Request& request, httplib::Response& response);
 

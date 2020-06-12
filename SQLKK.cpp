@@ -42,6 +42,25 @@ bool SQLKK::Update(const std::string& sql_sentence) {
   return ExecuteSql(sql_sentence);
 }
 
+int SQLKK::Find(const std::string& sql_sentence) {
+  sqlite3_stmt* stmt = nullptr;
+
+  int status = sqlite3_prepare_v2(engine_.get(), sql_sentence.c_str(), -1,
+                                  &stmt, nullptr);
+
+  if (status != SQLITE_OK) {
+    printf("sql error!\n");
+    return -2;
+  }
+
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    int id = sqlite3_column_int(stmt, 0);
+    return id;
+  }
+
+  return -1;
+}
+
 bool SQLKK::Remove(const std::string& sql_sentence) {
   return ExecuteSql(sql_sentence);
 }

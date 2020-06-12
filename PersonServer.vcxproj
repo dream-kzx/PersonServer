@@ -145,12 +145,14 @@
     <ClCompile Include="Controller.cpp" />
     <ClCompile Include="KServer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MyCrypto.cpp" />
     <ClCompile Include="SQLKK.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="KServer.h" />
+    <ClInclude Include="MyCrypto.h" />
     <ClInclude Include="SQLKK.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

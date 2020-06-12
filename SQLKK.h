@@ -28,6 +28,9 @@ class SQLKK {
 
   std::shared_ptr<sqlite3_stmt> Select(const std::string& sql_sentence);
 
+
+  int Find(const std::string& sql_sentence);
+
   bool Update(const std::string& sql_sentence);
 
   bool Remove(const std::string& sql_sentence);
