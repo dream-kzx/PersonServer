@@ -1,4 +1,4 @@
-#pragma once
+﻿
 #ifndef PERSONSERVER_SQLKK_H
 #define PERSONSERVER_SQLKK_H
 
@@ -27,6 +27,9 @@ class SQLKK {
   int InitEngine();
 
   std::shared_ptr<sqlite3_stmt> Select(const std::string& sql_sentence);
+
+
+  int Find(const std::string& sql_sentence);
 
   bool Update(const std::string& sql_sentence);
 

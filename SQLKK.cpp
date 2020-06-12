@@ -1,4 +1,4 @@
-#include "SQLKK.h"
+﻿#include "SQLKK.h"
 
 #include <chrono>
 #include <cstdio>
@@ -42,6 +42,25 @@ bool SQLKK::Update(const std::string& sql_sentence) {
   return ExecuteSql(sql_sentence);
 }
 
+int SQLKK::Find(const std::string& sql_sentence) {
+  sqlite3_stmt* stmt = nullptr;
+
+  int status = sqlite3_prepare_v2(engine_.get(), sql_sentence.c_str(), -1,
+                                  &stmt, nullptr);
+
+  if (status != SQLITE_OK) {
+    printf("sql error!\n");
+    return -2;
+  }
+
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    int id = sqlite3_column_int(stmt, 0);
+    return id;
+  }
+
+  return -1;
+}
+
 bool SQLKK::Remove(const std::string& sql_sentence) {
   return ExecuteSql(sql_sentence);
 }
@@ -66,21 +85,6 @@ bool SQLKK::ExecuteSql(const std::string& sql_sentence) {
   sqlite3_finalize(stmt);
 
   return result;
-}
-
-//获取当前的系统时间，格式为2020-6-11 14:43:11
-const std::string getCurrentTime() {
-  auto current_time =
-      std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-  struct tm ptm;
-  localtime_s(&ptm, &current_time);
-
-  char date[60] = {0};
-  sprintf_s(date, 60, "%d-%02d-%02d %02d:%02d:%02d", (int)ptm.tm_year + 1900,
-            (int)ptm.tm_mon + 1, (int)ptm.tm_mday, (int)ptm.tm_hour,
-            (int)ptm.tm_min, (int)ptm.tm_sec);
-
-  return std::string(date);
 }
 
 }  // namespace lookupman

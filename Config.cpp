@@ -1,4 +1,4 @@
-#include "Config.h"
+﻿#include "Config.h"
 
 
-
+void global_init() { sqlEngine.InitEngine(); }
