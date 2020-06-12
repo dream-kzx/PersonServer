@@ -147,6 +147,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyCrypto.cpp" />
     <ClCompile Include="SQLKK.cpp" />
+    <ClCompile Include="Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
@@ -154,6 +155,7 @@
     <ClInclude Include="KServer.h" />
     <ClInclude Include="MyCrypto.h" />
     <ClInclude Include="SQLKK.h" />
+    <ClInclude Include="Tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

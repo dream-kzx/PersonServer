@@ -1,5 +1,7 @@
-// ManagerServer.cpp: 定义应用程序的入口点。
+﻿// ManagerServer.cpp: 定义应用程序的入口点。
 //
+//
+#pragma execution_character_set("utf-8")
 #include <httplib.h>
 #include <sqlite3.h>
 

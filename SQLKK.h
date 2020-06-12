@@ -1,4 +1,4 @@
-#pragma once
+﻿
 #ifndef PERSONSERVER_SQLKK_H
 #define PERSONSERVER_SQLKK_H
 

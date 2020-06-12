@@ -1,4 +1,4 @@
-#include "MyCrypto.h"
+﻿#include "MyCrypto.h"
 
 #include "cryptopp/cryptlib.h"
 #include "cryptopp/files.h"

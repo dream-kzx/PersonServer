@@ -1,4 +1,4 @@
-#ifndef PERSONSERVER_CONFIG_H
+﻿#ifndef PERSONSERVER_CONFIG_H
 #define PERSONSERVER_CONFIG_H
 
 #include "SQLKK.h"

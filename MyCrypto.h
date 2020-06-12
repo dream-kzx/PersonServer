@@ -1,4 +1,4 @@
-#ifndef PERSONSERVER_MYCRYPTO_H
+﻿#ifndef PERSONSERVER_MYCRYPTO_H
 #define PERSONSERVER_MYCRYPTO_H
 #include <string>
 
