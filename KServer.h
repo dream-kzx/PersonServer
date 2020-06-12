@@ -1,4 +1,4 @@
-#ifndef PERSONSERVER_KSERVER_H
+﻿#ifndef PERSONSERVER_KSERVER_H
 #define PERSONSERVER_KSERVER_H
 // using namespace httplib;
 
@@ -12,9 +12,10 @@
 // server.listen("localhost", 1234);
 //
 
-#include <httplib.h>
-#include <rapidjson/document.h>
+#include <map>
 #include <string>
+
+#include "httplib.h"
 
 namespace lookupman {
 
@@ -37,12 +38,17 @@ class KServer {
 
   bool Listen() { return server_.listen(address_.c_str(), port_); }
 
+  void PutToken(std::string token, std::string account_number) {
+    tokens_[token] = account_number;
+  }
+
+  const std::string GetUserInToken(std::string account_number);
+
  private:
   httplib::Server server_;
   std::string address_;
   int port_;
-
-
+  std::map<std::string, std::string> tokens_;
 };
 }  // namespace lookupman
 
