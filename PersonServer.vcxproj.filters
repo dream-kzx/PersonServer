@@ -36,6 +36,12 @@
     <ClCompile Include="Tools.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="TokenManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MyJson.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SQLKK.h">
@@ -54,6 +60,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Tools.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TokenManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyJson.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

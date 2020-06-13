@@ -5,6 +5,7 @@
 
 #ifndef PERSONSERVER_TOOL_H
 #define PERSONSERVER_TOOL_H
+#include <chrono>
 #include <string>
 
 namespace lookupman {
@@ -20,7 +21,7 @@ std::string UTF8ToGBK(const char* strUTF8);
 std::string KGetCurrentTime();
 
 //获取当前的系统时间戳
-std::string KGetCurrentTimestamp();
+std::chrono::nanoseconds KGetCurrentTimestamp();
 
 std::string GenerateToken(const std::string& key_message);
 

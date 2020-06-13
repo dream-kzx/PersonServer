@@ -146,7 +146,9 @@
     <ClCompile Include="KServer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyCrypto.cpp" />
+    <ClCompile Include="MyJson.cpp" />
     <ClCompile Include="SQLKK.cpp" />
+    <ClCompile Include="TokenManager.cpp" />
     <ClCompile Include="Tools.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -154,7 +156,9 @@
     <ClInclude Include="Controller.h" />
     <ClInclude Include="KServer.h" />
     <ClInclude Include="MyCrypto.h" />
+    <ClInclude Include="MyJson.h" />
     <ClInclude Include="SQLKK.h" />
+    <ClInclude Include="TokenManager.h" />
     <ClInclude Include="Tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

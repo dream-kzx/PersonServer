@@ -4,13 +4,14 @@
 #include "Tools.h"
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
-
+#include "MyJson.h"
 
 
 void StaffLogin(const httplib::Request& request, httplib::Response& response) {
   //验证头部参数
   if (!request.has_file("username") || !request.has_file("password")) {
-    std::string msg = lookupman::encode_json(404);
+    lookupman::MyJson json_builder(404);
+    std::string msg = json_builder.GetJsonString();
     response.set_content(msg, "text/plain");
     return;
   }
@@ -25,7 +26,8 @@ void StaffLogin(const httplib::Request& request, httplib::Response& response) {
   auto select_result = sqlEngine.Select(sql_string);
 
   if (select_result == nullptr) {
-    std::string msg = lookupman::encode_json(404);
+    lookupman::MyJson json_builer(404);
+    std::string msg = json_builer.GetJsonString();
     response.set_content(msg, "application/json; charset=utf-8");
     return;
   }
@@ -36,18 +38,15 @@ void StaffLogin(const httplib::Request& request, httplib::Response& response) {
         (const char*)sqlite3_column_text(select_result.get(), 1);
 
     auto token = lookupman::GenerateToken(account_number);
-    k_server.PutToken(token, account_number);
+    k_server.PutToken(token, account_number,lookupman::KGetCurrentTimestamp());
 
-    rapidjson::StringBuffer buffer;
-    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-    writer.StartObject();
+    lookupman::MyJson json_builder(200, 1);
+    json_builder.StartSubObject("message");
+    json_builder.AddValue("token", token);
+    json_builder.EndSubObject();
 
-    writer.Key("token");
-    writer.String(token.data());
-   
-    writer.EndObject();
 
-    std::string msg = lookupman::encode_json(200, 1, buffer.GetString());
+    std::string msg = json_builder.GetJsonString();
     response.set_content(msg, "application/json;charset=utf-8");
     return;
   }

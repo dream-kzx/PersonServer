@@ -1,8 +1,6 @@
 ﻿#include "Tools.h"
 
 #include <Windows.h>
-
-#include <chrono>
 #include <rapidjson/writer.h>
 
 #include "MyCrypto.h"
@@ -61,15 +59,16 @@ std::string KGetCurrentTime() {
   return std::string(date);
 }
 
-std::string KGetCurrentTimestamp() {
-  auto duration = std::chrono::system_clock::now().time_since_epoch().count();
+std::chrono::nanoseconds KGetCurrentTimestamp() {
+  std::chrono::nanoseconds duration =
+      std::chrono::system_clock::now().time_since_epoch();
 
-  return std::to_string(duration);
+  return duration;
 }
 
 // Token生成格式，用户名+时间戳+FixedString， 然后用sha1生成hash值
 std::string GenerateToken(const std::string& key_message) {
-  std::string temp = key_message + KGetCurrentTimestamp() + FixedString;
+  std::string temp = key_message + std::to_string(KGetCurrentTimestamp().count())+ FixedString;
 
   return MyCrypto::Hash(temp);
 }
@@ -99,14 +98,14 @@ std::string encode_json(int status, int status_code,
   writer.Key("status_code");
   writer.Int(status_code);
 
-  
   writer.Key("message");
-  //writer.StartObject();
+  // writer.StartObject();
   writer.String(message.c_str());
-  //writer.EndObject();
+  // writer.EndObject();
 
   writer.EndObject();
 
   return buffer.GetString();
 }
+
 }  // namespace lookupman

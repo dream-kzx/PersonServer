@@ -15,6 +15,7 @@
 #include <map>
 #include <string>
 
+#include "TokenManager.h"
 #include "httplib.h"
 
 namespace lookupman {
@@ -23,8 +24,11 @@ using Func = std::function<void()>;
 
 class KServer {
  public:
-  KServer(const std::string& address, int port)
-      : address_(address), port_(port) {}
+  KServer(const std::string& address, int port,
+          std::chrono::minutes token_timeout)
+      : address_(address), port_(port), token_manager_(token_timeout) {
+    token_manager_.CheckToken();
+  }
 
   ~KServer() { server_.stop(); }
 
@@ -38,17 +42,23 @@ class KServer {
 
   bool Listen() { return server_.listen(address_.c_str(), port_); }
 
-  void PutToken(std::string token, std::string account_number) {
-    tokens_[token] = account_number;
+  void PutToken(std::string token, std::string account_number,
+                std::chrono::nanoseconds generate_time) {
+    token_manager_.PutToken(token, account_number, generate_time);
   }
 
-  const std::string GetUserInToken(std::string account_number);
+  void DeleteToken(std::string token) { token_manager_.DeleteToken(token); }
+
+  const std::string GetUserInToken(std::string token) {
+    return token_manager_.GetUserInToken(token);
+  }
 
  private:
   httplib::Server server_;
   std::string address_;
   int port_;
-  std::map<std::string, std::string> tokens_;
+
+  TokenManager token_manager_;
 };
 }  // namespace lookupman
 
