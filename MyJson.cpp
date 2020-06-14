@@ -6,7 +6,6 @@ MyJson::MyJson(int status) : writer_(buffer_), number_(0) {
   writer_.Key("status");
   writer_.Int(status);
 
-  writer_.EndObject();
 }
 
 MyJson::MyJson(int status, int status_code) : writer_(buffer_), number_(0) {
@@ -46,7 +45,7 @@ void MyJson::AddValue(const std::string& key, const std::string& value) {
   writer_.String(value.data());
 }
 
-std::string MyJson::GetJsonString() {
+const std::string MyJson::GetJsonString() {
   writer_.EndObject();
   if (number_ != 0) return "";
 

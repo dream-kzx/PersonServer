@@ -31,6 +31,8 @@ int main() {
   k_server.Post("/SignIn", StaffSignIn);
 
   k_server.Post("/login", StaffLogin);
+  k_server.Post("/GetStaffMessage", StaffGetMessage);
+  k_server.Post("/UpdateStaffMessage", StaffUpdateMessage);
 
   k_server.Get("/", [](const Request& req, Response& res) {
     res.set_content("Hello World!", "text/plain");

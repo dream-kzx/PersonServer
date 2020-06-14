@@ -38,7 +38,7 @@ class MyJson {
   void AddValue(const std::string& key, const std::string& value);
   void AddValue(const std::string& key, double value);
 
-  std::string GetJsonString();
+  const std::string GetJsonString();
 
  private:
   rapidjson::StringBuffer buffer_;

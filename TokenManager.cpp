@@ -5,8 +5,8 @@
 #include "Tools.h"
 
 namespace lookupman {
-void TokenManager::PutToken(std::string token, std::string account_number,
-                            std::chrono::nanoseconds generate_time) {
+void TokenManager::PutToken(const std::string& token, const std::string& account_number,
+                            const std::chrono::nanoseconds& generate_time) {
   TokenMsg token_msg = {account_number, generate_time};
   {
     std::lock_guard<std::mutex> token_lock(token_mutex_);
@@ -15,13 +15,13 @@ void TokenManager::PutToken(std::string token, std::string account_number,
   }
 }
 
-void TokenManager::DeleteToken(std::string token) {
+void TokenManager::DeleteToken(const std::string& token) {
   std::lock_guard<std::mutex> token_lock(token_mutex_);
   auto iter = tokens_.find(token);
   if (iter != tokens_.end()) tokens_.erase(iter);
 }
 
-std::string TokenManager::GetUserInToken(std::string token) {
+std::string TokenManager::GetUserInToken(const std::string& token) {
   std::lock_guard<std::mutex> token_lock(token_mutex_);
   auto iter = tokens_.find(token);
   if (iter != tokens_.end()) {

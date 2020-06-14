@@ -1,18 +1,25 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "Controller.h"
 
-#include "Tools.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 #include "MyJson.h"
+#include "Tools.h"
 
+void ErrorRequest(httplib::Response& response) {
+  lookupman::MyJson json_builder(404);
+  std::string msg = json_builder.GetJsonString();
+  response.set_content(msg, "application/json; charset=utf-8");
+};
+
+void LoginExpire(httplib::Response& response) {
+  lookupman::MyJson json_builer(200, 0, "用户凭证已失效，请重新登录!");
+  const auto msg = json_builer.GetJsonString();
+  response.set_content(msg, "application/json; charset=utf-8");
+}
 
 void StaffLogin(const httplib::Request& request, httplib::Response& response) {
   //验证头部参数
   if (!request.has_file("username") || !request.has_file("password")) {
-    lookupman::MyJson json_builder(404);
-    std::string msg = json_builder.GetJsonString();
-    response.set_content(msg, "text/plain");
+    ErrorRequest(response);
     return;
   }
 
@@ -26,9 +33,7 @@ void StaffLogin(const httplib::Request& request, httplib::Response& response) {
   auto select_result = sqlEngine.Select(sql_string);
 
   if (select_result == nullptr) {
-    lookupman::MyJson json_builer(404);
-    std::string msg = json_builer.GetJsonString();
-    response.set_content(msg, "application/json; charset=utf-8");
+    ErrorRequest(response);
     return;
   }
 
@@ -37,14 +42,14 @@ void StaffLogin(const httplib::Request& request, httplib::Response& response) {
     std::string account_number =
         (const char*)sqlite3_column_text(select_result.get(), 1);
 
-    auto token = lookupman::GenerateToken(account_number);
-    k_server.PutToken(token, account_number,lookupman::KGetCurrentTimestamp());
+    auto token = lookupman::GenerateToken(account_number + "staff");
+    k_server.PutTokenInStaff(token, account_number,
+                             lookupman::KGetCurrentTimestamp());
 
     lookupman::MyJson json_builder(200, 1);
     json_builder.StartSubObject("message");
     json_builder.AddValue("token", token);
     json_builder.EndSubObject();
-
 
     std::string msg = json_builder.GetJsonString();
     response.set_content(msg, "application/json;charset=utf-8");
@@ -61,8 +66,7 @@ void StaffSignIn(const httplib::Request& request, httplib::Response& response) {
   if (!request.has_file("username") || !request.has_file("password") ||
       !request.has_file("name") || !request.has_file("sex") ||
       !request.has_file("phone")) {
-    std::string msg = lookupman::encode_json(404);
-    response.set_content(msg, "application/json; charset=utf-8");
+    ErrorRequest(response);
     return;
   }
 
@@ -116,6 +120,124 @@ void StaffSignIn(const httplib::Request& request, httplib::Response& response) {
     return;
   } else {
     std::string msg = lookupman::encode_json(500, 1, "server error");
+    response.set_content(msg, "application/json; charset=utf-8");
+    return;
+  }
+}
+
+void StaffGetMessage(const httplib::Request& request,
+                     httplib::Response& response) {
+  if (!request.has_file("token")) {
+    ErrorRequest(response);
+    return;
+  }
+
+  std::string token = request.get_file_value("token").content;
+
+  if (token.empty()) {
+    ErrorRequest(response);
+    return;
+  }
+
+  const auto account_number = k_server.GetUserInTokenInStaff(token);
+  if (account_number.empty()) {
+    LoginExpire(response);
+    return;
+  }
+
+  std::string sql_string =
+      "select name,sex,phone,head_url from staff where account_number = '" +
+      account_number + "'";
+
+  auto result = sqlEngine.Select(sql_string);
+
+  if (sqlite3_step(result.get()) != SQLITE_ROW) {
+    lookupman::MyJson json_builer(500, 0, "服务器内部错误！");
+  }
+
+  std::string name = (const char*)sqlite3_column_text(result.get(), 0);
+  std::string sex = (const char*)sqlite3_column_text(result.get(), 1);
+  std::string phone = (const char*)sqlite3_column_text(result.get(), 2);
+  std::string head_url = (const char*)sqlite3_column_text(result.get(), 3);
+
+  lookupman::MyJson json_builder(200, 1);
+  json_builder.StartSubObject("message");
+  json_builder.AddValue("name", name);
+  json_builder.AddValue("sex", sex);
+  json_builder.AddValue("phone", phone);
+  json_builder.AddValue("head_url", head_url);
+  json_builder.EndSubObject();
+  const auto msg = json_builder.GetJsonString();
+
+  response.set_content(msg, "application/json; charset=utf-8");
+}
+
+void StaffUpdateMessage(const httplib::Request& request,
+                        httplib::Response& response) {
+  if (!request.has_file("token")) {
+    ErrorRequest(response);
+    return;
+  }
+
+  auto token = request.get_file_value("token").content;
+  auto account_number = k_server.GetUserInTokenInStaff(token);
+
+  if (account_number.empty()) {
+    LoginExpire(response);
+    return;
+  }
+
+  std::string name;
+  std::string sex;
+  std::string phone;
+  std::string head_url;
+  if (request.has_file("name")) name = request.get_file_value("name").content;
+  if (request.has_file("sex")) sex = request.get_file_value("sex").content;
+  if (request.has_file("phone"))
+    phone = request.get_file_value("phone").content;
+  if (request.has_file("head_url"))
+    head_url = request.get_file_value("head_url").content;
+
+  if (name.empty() && sex.empty() && phone.empty() && head_url.empty()) {
+    lookupman::MyJson json_builder(200, 1, "更新成功！");
+    std::string msg = json_builder.GetJsonString();
+    response.set_content(msg, "application/json; charset=utf-8");
+    return;
+  }
+
+  std::string sql_string = "update staff set ";
+  int i = 0;
+  if (!name.empty()) {
+    sql_string += "name = '" + name + "'";
+    ++i;
+  }
+  if (!sex.empty()) {
+    if (i != 0) sql_string += ",";
+    sql_string += "sex = '" + sex + "'";
+    ++i;
+  }
+  if (!phone.empty()) {
+    if (i != 0) sql_string += ",";
+    sql_string += "phone = '" + phone + "'";
+    ++i;
+  }
+  if (!head_url.empty()) {
+    if (i != 0) sql_string += ",";
+    sql_string += "head_url = '" + head_url + "'";
+    ++i;
+  }
+  
+
+  sql_string += " where account_number = '" + account_number + "'";
+
+  if (sqlEngine.Update(sql_string)) {
+    lookupman::MyJson json_builder(200, 1, "更新成功！");
+    std::string msg = json_builder.GetJsonString();
+    response.set_content(msg, "application/json; charset=utf-8");
+    return;
+  } else {
+    lookupman::MyJson json_builder(500, 0, "服务器内部错误！");
+    std::string msg = json_builder.GetJsonString();
     response.set_content(msg, "application/json; charset=utf-8");
     return;
   }

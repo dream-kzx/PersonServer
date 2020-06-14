@@ -14,14 +14,14 @@ class TokenManager {
   };
 
  public:
-  explicit TokenManager(std::chrono::minutes timeout)
+  explicit TokenManager(const std::chrono::minutes& timeout)
       : timeout_(timeout), status_(true) {}
   ~TokenManager() { status_ = false; }
 
-  void PutToken(std::string token, std::string account_number,
-                std::chrono::nanoseconds generate_time);
-  void DeleteToken(std::string token);
-  std::string GetUserInToken(std::string token);
+  void PutToken(const std::string& token, const std::string& account_number,
+                const std::chrono::nanoseconds& generate_time);
+  void DeleteToken(const std::string& token);
+  std::string GetUserInToken(const std::string& token);
   void CheckToken();
 
  private:
